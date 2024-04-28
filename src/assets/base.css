@@ -72,3 +72,24 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+
+/* Add customs scroller css (global) */
+
+.scroller {
+  height: calc(100%-48px);
+}
+
+.customScroller::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.customScroller::-webkit-scrollbar-thumb {
+  background-color: rgba(151, 151, 151, 0.726);
+  border-radius: 5px;
+}
+
+.customScroller::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(151, 151, 151);
+}
