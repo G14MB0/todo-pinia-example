@@ -26,6 +26,7 @@ import {
 .content {
   padding: 0 20px;
   max-width: 800px;
+  min-height: calc(100vh - 64px);
   width: 95%;
   margin: 0 auto;
 }
