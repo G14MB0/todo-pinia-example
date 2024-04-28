@@ -3,4 +3,5 @@ export interface ITodo {
   id: string;
   done: boolean;
   important: boolean;
+  dueDate: string | null
 }
