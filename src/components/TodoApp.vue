@@ -1,3 +1,15 @@
+<!-- 
+  Main update on this file:
+  - change the main element into a <form /> to handle "required" validation
+  - add html element (described in the template) using ant-design components to align with original design:
+    - add Button to improve UX  (previous keyup event was not so intuitive)
+    - add DatePicker (just date, but can be easily extended to datetime if necessary) to handle due-date selection for new todos
+  - create a ref for propagating DatePicker value
+  - add custom date formatting function to align format with API schema
+  - add css style 
+ -->
+
+
 <template>
   <!-- Added a form to handle required inputs. in this case just the name is required. removed the keyup.enter since form handle this already -->
   <form class="todo-form"  @submit="handleAddTodo">
@@ -25,7 +37,7 @@
     </Button> 
   </form> 
 
-  <!-- Styled this component, not necessary for functioning. -->
+  <!-- Styled this component -->
   <div class="info">
     <Typography>Done: {{ store.doneTodosCount }}</Typography>
     <Typography>Important: {{ store.importantTodosCount }}</Typography>
@@ -60,11 +72,11 @@
 import { Input, List, ListItem, Typography, DatePicker, Button } from 'ant-design-vue';
 import { ref } from 'vue';
 import { useTodoStore } from '@/stores/todo';
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
 import CloseCircleOutlined from '@ant-design/icons-vue/lib/icons/CloseCircleOutlined';
 import CheckOutlined from '@ant-design/icons-vue/lib/icons/CheckOutlined';
 import ExclamationOutlined from '@ant-design/icons-vue/lib/icons/ExclamationOutlined';
-// import { timePickerProps } from 'ant-design-vue/lib/time-picker/time-picker';
+
 
 const field = ref('');
 const selectedDate = ref(''); // added this to store the selected date
@@ -74,11 +86,12 @@ const store = useTodoStore();
 // Function to custom format date as a string
 function formatDate(date: Date|null|undefined) {
   if (!date) return null;
-  return new Intl.DateTimeFormat('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
+  return date.toISOString().split('T')[0]
 }
 
+// overwritten id creation (mantained a dummy empty value to align with interface) because servers will deal with IDs. 
 function createTodo(text: string, date: string | null) {
-  return { text, id: uuidv4(), done: false, important: false, dueDate: typeof date === 'string' ? date : formatDate(date) };
+  return { text, id: "", done: false, important: false, dueDate: typeof date === 'string' ? date : formatDate(date) };
 }
 
 function handleAddTodo(event: Event) {
@@ -141,7 +154,7 @@ function handleAddTodo(event: Event) {
   border-radius: 5px;
   transition: all 0.2s;
   margin-bottom: 20px;
-  overflow-y: scroll;
+  overflow-y: auto;
   max-height: 70vh;
 }
 .ant-list:hover{
