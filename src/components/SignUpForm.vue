@@ -10,17 +10,17 @@
  -->
 
 
-<template>
+ <template>
     <div class="signin-header">
         <div>
-            Log In
+            Sign Up
         </div>
         <div style="display: flex; justify-content: space-between; align-items: flex-end; font-size: small;">
             <div style="margin-right: 10px;">
-                New user?
+                Already Have an Account?
             </div>
-            <div style="cursor: pointer; color: blue;" @click="$emit('show-sign-in')">
-                Sign Up
+            <div style="cursor: pointer; color: blue;" @click="$emit('back-to-login')">
+                Log In
             </div>
         </div>
     </div>
@@ -40,7 +40,7 @@
         type="password"
       />
       <Button type="primary" class="input" html-type="submit">
-        Log In
+        Create New Account
       </Button>
       <div v-if="errorMessage" style=" color: rgba(168, 0, 0, 0.575);">
         Error: {{ errorMessage }}
@@ -55,39 +55,49 @@
     import { API_URL } from '@/main';
     import { setItem } from '@/stores/token';
     
-    const emit = defineEmits(['login-success', "show-sign-in"]);
+    const emit = defineEmits(['signup-success', 'back-to-login']);
+
     const username = ref('');
     const password = ref('');
 
     const errorMessage = ref('');
 
+
+
     function handleLogin() {
 
-        // A new FormData is created with username and password
+        // clear error value
+        errorMessage.value = '';
+
+        // This form data will be used to auto login after signUp
         const form_data = new FormData()
 
         form_data.append("username", username.value)
         form_data.append("password", password.value)
 
-
-        // Login endpoint called with form_data
-        axios.post(`${API_URL}/login/`, form_data).then((response) => {
-
-            // if response is ok (200), set the global "token" key
-            if (response.status === 200) {
-                console.log("LOGGED")
-                setItem("token", response.data.access_token)
-                setItem("name", username.value)
-                emit('login-success')
+        // create a variable with body of the request
+        const new_user = {
+            email: username.value,
+            password: password.value,
+            name: "default"
+        }
+        axios.post(`${API_URL}/users/`, new_user).then((response) => {
+            // If the user creation request is ok (201) procede again with login of the new user using same credential
+            if (response.status === 201) {
+                console.log("NEW USER CREATED")
+                axios.post(`${API_URL}/login/`, form_data).then((response) => {
+                    if (response.status === 200) {
+                        console.log("LOGGED")
+                        setItem("token", response.data.access_token)
+                        setItem("name", username.value)
+                    }})
             }
-            else { // This is usually never called since the server response with an error status but is generally needed in case of other non-error status
-                console.log("NOT LOGGED")
+            else { // this path is never reached in this case since all the case are handled with other paths.
+                console.log("USER CREATION FAIL")
                 console.log(response.data.detail)
                 errorMessage.value = response && response.data.detail ? response.data.detail : "Failed to log in.";
             }
         }).catch((error) => {
-            // in case of error, the server respond with 404 if the email is not present in the database -> create a new user
-            console.log(error)
             console.log("USER CREATION FAIL")
             errorMessage.value = error.response && error.response.data.detail ? error.response.data.detail : "Failed to log in.";
         })
