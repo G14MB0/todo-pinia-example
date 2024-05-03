@@ -92,8 +92,37 @@ export const useTodoStore = defineStore('todo', () => {
     .catch((error) => {console.error('Error updating todo:', error); todos.value = todos.value.map((todo) => toggleProp('important', id, todo));});
   }
 
+  function editTodo(id: string, newData: any) {
 
-  // TODO check if these functions works after fetching todos from server and update local todos
+    // Search if the todo with this id exists
+    const todoIndex = todos.value.findIndex(todo => todo.id === id);
+    if (todoIndex !== -1) {
+        // Merge the existing todo data with the new data
+        const updatedTodo = { ...todos.value[todoIndex], ...newData };
+        // Update the todo in the array
+        todos.value.splice(todoIndex, 1, updatedTodo);
+
+        axios.put(`${API_URL}/todo/update/${id}`, todos.value.find(todo => todo.id === id), {
+          headers: { 'Authorization': `Bearer ${storageState.token}` }
+        })
+        .then((response) => {})
+        .catch((error) => {console.error('Error updating todo:', error); todos.value.splice(todoIndex, 1, todos.value[todoIndex]);});
+      }
+  }
+
+  
+
+  // This is a function to search ToDos based on a single query parameter (text)
+  function fetchTodosByContent(searchText: string) {
+    axios.get(`${API_URL}/todo/bycontent?contains=${encodeURIComponent(searchText)}`, {
+      headers: { 'Authorization': `Bearer ${storageState.token}` }
+    })
+      .then(response => {
+        todos.value = response.data;
+      })
+      .catch(error => console.error('Error fetching todos:', error));
+  }
+
   const doneTodosCount = computed(() => todos.value.filter((todo) => todo.done).length);
   const importantTodosCount = computed(() => todos.value.filter((todo) => todo.important).length);
   const activeTodosCount = computed(() => todos.value.filter((todo) => !todo.done).length);
@@ -107,6 +136,8 @@ export const useTodoStore = defineStore('todo', () => {
     doneTodosCount,
     importantTodosCount,
     activeTodosCount,
+    fetchTodosByContent,
+    editTodo,
     todos
   };
 });

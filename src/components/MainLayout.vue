@@ -10,19 +10,20 @@
 <template>
   <Layout>
     <LayoutHeader class="header">
-      <div>
-      <RouterLink class="link" to="/">Home</RouterLink>
-      <RouterLink to="/about">About</RouterLink>
-    </div>
-    <template v-if="isLoggedIn">
-    <div>
-      <Button
-        @click="handleLogOut"
-      >
-        Log Out
-      </Button>
-    </div>
-  </template>
+      <div style="display: flex; align-items: center;">
+        <RouterLink class="link" to="/">Home</RouterLink>
+        <RouterLink class="link" to="/about">About</RouterLink>
+      </div>
+      <template v-if="isLoggedIn">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <Typography style="padding: 0 20px; color: #555555;"> user: {{ storageState.name }} </Typography>
+        <Button
+          @click="handleLogOut"
+        >
+          Log Out
+        </Button>
+      </div>
+    </template>
     </LayoutHeader>
     <LayoutContent class="content">
       <slot></slot>
@@ -36,7 +37,7 @@ import {
   Layout,
   LayoutHeader,
   LayoutContent,
-  TypographyTitle,
+  Typography,
   Menu,
   MenuItem,
   Button,
@@ -50,6 +51,7 @@ const isLoggedIn = computed(() => storageState.token !== null);
 
 function handleLogOut() {
   removeItem("token")
+  removeItem("name")
 }
 </script>
 
@@ -57,16 +59,22 @@ function handleLogOut() {
 .content {
   padding: 0 20px;
   max-width: 800px;
-  min-height: calc(100vh - 64px);
+  min-height: calc(100vh - 44px);
   width: 95%;
   margin: 0 auto;
 }
 .link {
   margin-right: 15px;
+  color: rgb(5, 5, 5);
 }
 
 .header {
   display: flex;
   justify-content: space-between;
+  background-color: #e4e4e4;
+}
+
+.ant-layout-header {
+  height: 44px;
 }
 </style>

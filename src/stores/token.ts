@@ -9,7 +9,8 @@
 import { reactive } from 'vue';
 
 export const storageState = reactive({
-    token: localStorage.getItem('token') || null
+    token: localStorage.getItem('token') || null,
+    name: localStorage.getItem('name') || null
 });
 
 // Function to set item and notify about the change
@@ -17,6 +18,9 @@ export function setItem(key: string, value: string) {
     localStorage.setItem(key, value);
     if (key === 'token') {
         storageState.token = value;
+    }
+    if (key === 'name') {
+        storageState.name = value;
     }
 }
 
@@ -30,5 +34,8 @@ export function removeItem(key: string) {
     localStorage.removeItem(key);
     if (key === 'token') {
         storageState.token = null;
+    }
+    if (key === 'name') {
+        storageState.name = null;
     }
 }
