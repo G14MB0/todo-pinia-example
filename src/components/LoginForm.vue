@@ -3,10 +3,6 @@
     - Login form: username and password required to login
     - handleLogin function to handle the login after form submission
     - global reactive state is updated with "token" key. logic detailed in "tokens.ts" file
-    - just for this purpose, the signUp logic is handled automatically if the server responds with "this user does not exists"
-        so this form has a double usage. (logic described inline in handleLogin function)
-        In a common situation I won't use (backend side) a different response for invalid credential and user not found to make 
-        things more private
  -->
 
 
